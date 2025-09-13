@@ -53,6 +53,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
     '4', '5', '6', '*',
     '1', '2', '3', '-',
     'C', '0', '=', '+',
+    '%', 'x²' // <-- Added modulo and square buttons
   ];
 
   void _onButtonPressed(String value) {
@@ -73,10 +74,31 @@ class _CalculatorPageState extends State<CalculatorPage> {
           _result = 'Error';
           _hasError = true;
         }
+      } else if (value == 'x²') {
+        // Square the current number/expression
+        if (_expression.isEmpty || _expression.contains('=')) return;
+        try {
+          final exp = Expression.parse(_expression);
+          final evaluator = const ExpressionEvaluator();
+          final evalResult = evaluator.eval(exp, {});
+          final squared = (evalResult is num) ? evalResult * evalResult : null;
+          if (squared != null) {
+            _expression = '($_expression)²';
+            _result = squared.toString();
+            _expression = '$_expression = $_result';
+          }
+        } catch (e) {
+          _result = 'Error';
+          _hasError = true;
+        }
       } else {
         if (_expression.contains('='))
           _expression = '';
-        _expression += value;
+        if (value == '%') {
+          _expression += '%';
+        } else {
+          _expression += value;
+        }
       }
     });
   }
@@ -85,7 +107,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
     Color bgColor;
     if (value == 'C') {
       bgColor = Colors.red.shade300;
-    } else if ('/*-+='.contains(value)) {
+    } else if ('/*-+=%'.contains(value) || value == 'x²') {
       bgColor = Colors.blue.shade300;
     } else {
       bgColor = Colors.grey.shade200;
@@ -147,10 +169,10 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   for (int i = 0; i < _buttons.length; i += 4)
                     Row(
                       children: [
-                        _buildButton(_buttons[i]),
-                        _buildButton(_buttons[i + 1]),
-                        _buildButton(_buttons[i + 2]),
-                        _buildButton(_buttons[i + 3]),
+                        if (i < _buttons.length) _buildButton(_buttons[i]),
+                        if (i + 1 < _buttons.length) _buildButton(_buttons[i + 1]),
+                        if (i + 2 < _buttons.length) _buildButton(_buttons[i + 2]),
+                        if (i + 3 < _buttons.length) _buildButton(_buttons[i + 3]),
                       ],
                     ),
                 ],
