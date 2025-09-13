@@ -114,7 +114,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calculator - Your Name'), // <-- Put your name here
+        title: const Text('Calculator - Badhan Hasan'), 
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
       ),
